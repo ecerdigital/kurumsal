@@ -32,8 +32,11 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
 
+    'django_filters',
+
     'core',
     'personel',
+    'muhasebe',
 ]
 
 MIDDLEWARE = [
