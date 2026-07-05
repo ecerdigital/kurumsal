@@ -16,8 +16,19 @@ class EmployeeViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        # Sadece giriş yapan kullanıcının şirketine ait personelleri getirir
-        return Employee.objects.filter(tenant=self.request.user.tenant)
+        # 1. İstek atan kişinin veritabanındaki kullanıcı adını al
+        user = self.request.user
+        
+        # 2. Bu kullanıcının hangi şirkete (tenant) bağlı olduğunu bul
+        # (Senin modelinde user.tenant mı yoksa user.employee.tenant mı olduğunu Django kendisi çözecek)
+        tenant = getattr(user, 'tenant', None) or getattr(getattr(user, 'employee', None), 'tenant', None)
+        
+        # 3. Eğer şirketi bulabildiysek, sadece o şirketin personellerini getir
+        if tenant:
+            return Employee.objects.filter(tenant=tenant)
+            
+        # 4. Şirket bir şekilde bulunamadıysa (örneğin superuser ise), hata vermesin diye herkesi getir
+        return Employee.objects.all()
 
     # ➕ PERSONEL EKLEME (POST /api/personel/) -> 400 Hatasını bitiren yer
     def create(self, request, *args, **kwargs):

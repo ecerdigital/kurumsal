@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'core',
     'personel',
     'muhasebe',
+    'planlama',
 ]
 
 MIDDLEWARE = [
